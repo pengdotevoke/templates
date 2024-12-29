@@ -1,0 +1,200 @@
+<div style="font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+    <t t-name="sale.report_saleorder_document">
+  
+           <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+           <table style="width:100%; font-size:18px; font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;" class="table table-sm o_main_table table-borderless mt-4">
+                  <tbody>
+                       <colgroup>
+                              <col width="40%"/>
+                               <col width="20%"/>
+                              <col width="40%"/>
+                      </colgroup>
+                      <tr>
+                      
+                      <td style="text-align:left">
+                          <strong><t t-esc="res_company.name"/><br/></strong> 
+                          <t t-esc="res_company.street"/><br/>
+                          <t t-esc="res_company.street2"/>, <t t-esc="res_company.city"/><br/>
+                          <t t-esc="res_company.phone"/><br/>  
+                          <t t-esc="res_company.email"/><br/>
+                          <t t-esc="res_company.website"/><br/></td>
+                     
+                     <td/>
+                     
+                     <td><img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo"/></td></tr>
+                  </tbody>
+              </table>
+              <br/>
+         
+          <div class="page" style="font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+  
+             
+              
+              <div class="oe_structure"/>
+  
+              <div class="mt-4">
+              <h2 class="mt-4">
+                  <span t-if="env.context.get('proforma', False) or is_pro_forma">Pro-Forma Invoice </span>
+                  <span t-elif="doc.state in ['draft','sent']">Quotation  </span>
+                  <span t-else="">Order  </span>
+                  <span t-field="doc.name">SO0000</span>
+              </h2>
+                  <t t-if="doc.date_order"><strong style="color:#1f5999;">DATE:</strong> <t t-esc="doc.date_order"/></t><br/>
+                  <t t-if="doc.x_studio_lpo_number"> <strong style="color:#1f5999;">LPO NO:</strong><t t-esc="doc.x_studio_lpo_number"/></t><br/>
+                  <br/>
+                  
+                    <table class="table table-sm o_main_table table-borderless mt-4" style="width:100%; font-size:18px;font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+                  <thead style="background-color: #deeaf6;font-weight:bold; display: table-row-group;">
+                      <tr>
+                          <strong><td>Customer</td></strong>
+                      </tr>
+                  </thead>
+                  <tbody>
+                       <colgroup>
+                              <col width="33%"/>
+                      </colgroup>
+                      <tr>
+                          <td>
+                             <t t-esc="doc.partner_id.name"/><br/>
+                             <t t-esc="doc.partner_id.street"/><br/>
+                             <t t-esc="doc.partner_id.street2"/><br/>
+                             <t t-esc="doc.partner_id.city"/><br/>
+                             <t t-esc="doc.partner_id.vat"/><br/>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+              </div>
+  
+                <br/>
+                <br/>
+              <table class="table table-sm o_main_table table-borderless mt-4" style="width:100%; font-size:18px;font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+                  
+                      <thead style="background-color: #deeaf6;font-weight:bold; display: table-row-group;">
+                      <tr>
+                          <th name="th_name" style="text-align:center"><strong style="color:#1f5999;">#</strong></th>
+                          <th name="th_description" style="text-align:center"><strong style="color:#1f5999;">DESCRIPTION</strong></th>
+                          <th name="th_quantity" class="text-end" style="text-align:center"><strong style="color:#1f5999;">QTY</strong></th>
+                          <th name="th_price_unit" class="text-end" style="text-align:center"><strong style="color:#1f5999;">RATE</strong></th>
+                          <th name="th_taxes" style="text-align:center"><strong style="color:#1f5999;">TAX</strong></th>
+                          <th name="th_subtotal" class="text-end" style="text-align:center">
+                              <strong style="color:#1f5999;">Sub-Total</strong>
+                          </th>
+                          <th name="th_total" class="text-end" style="text-align:center">
+                              <strong style="color:#1f5999;">Total</strong>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <t t-set="current_subtotal" t-value="0"/>
+                      <t t-set="current_total" t-value="0"/>
+                      <t t-set="counter" t-value="1"/>
+                      <t t-foreach="doc.order_line" t-as="line">
+                          <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
+                          <t t-set="current_total" t-value="current_total + line.price_total"/>
+  
+                          <tr>
+                              <t t-if="not line.display_type">
+                                 <td id="product">
+                                     <t t-esc="counter"/>
+                                  </td>
+                                  <td id="product">
+                                      <span t-field="line.name"/>
+                                  </td>
+                                  <td class="text-end">
+                                      <span t-field="line.product_qty"/>
+                                      <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                      <span t-if="line.product_packaging_id">
+                                          (<span t-field="line.product_packaging_qty" t-options="{&quot;widget&quot;: &quot;integer&quot;}"/> <span t-field="line.product_packaging_id"/>)
+                                      </span>
+                                  </td>
+                                  <td class="text-end">
+                                      <t t-esc="'{:,}'.format(line.price_unit)"/>
+                                  </td>
+                                  <t t-set="taxes" t-value="', '.join([(tax.invoice_label or tax.name) for tax in line.tax_id])"/>
+                                  <td name="td_taxes" t-attf-class="text-end {{ 'text-nowrap' if len(taxes) &lt; 10 else '' }}">
+                                      <t t-esc="line.tax_id.name"/>
+                                  </td>
+                                  <td class="text-end">
+                                     <t t-esc="'{:,}'.format(line.price_subtotal)"/>
+                                  </td>
+                                  <td class="text-end">
+                                     <t t-esc="'{:,}'.format(line.price_total)"/>
+                                  </td>
+                              </t>
+                              <t t-if="line.display_type == 'line_section'">
+                                  <td colspan="99" id="section">
+                                      <span t-field="line.name"/>
+                                  </td>
+                                  <t t-set="current_section" t-value="line"/>
+                                  <t t-set="current_subtotal" t-value="0"/>
+                              </t>
+                              <t t-if="line.display_type == 'line_note'">
+                                  <td colspan="99" id="note">
+                                      <span t-field="line.name"/>
+                                  </td>
+                              </t>
+                              <t t-set="counter" t-value="counter+1"/>
+                          </tr>
+                      </t>
+                  </tbody>
+              </table>
+              <br/><br/>
+               <table style="width:100%; font-size:18px; font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;" class="table table-sm o_main_table table-borderless mt-4">
+                   <tbody>
+                   <colgroup>
+                          <col width="50%"/>
+                          <col width="50%"/>
+                  </colgroup>
+                  <tr><td/>
+                  <td style="text-align:right"> <span style="float:right;">
+                  
+              
+                    <span style="color:#313c8d; font-weight:bold">  SUBTOTAL: Ksh. <t t-esc="round(current_subtotal,2)"/></span><br/>
+                    <span style="color:#313c8d; font-weight:bold">  VAT: Ksh. <t t-esc="round(current_total-current_subtotal,2)"/></span><br/>
+                    <span style="color:#313c8d; font-weight:bold">  TOTAL: Ksh. <t t-esc="round(current_total, 2)"/></span><br/>
+                  <br/>
+                  </span>
+                  <br/> </td></tr>
+                  <br/><br/>
+                  <tr><td>  <span style="float:left;">
+                      Account Name: <strong>KCB Bank (K) LTD</strong> <br/>
+                      KES Account Number: <strong>1315437627</strong> <br/>
+                      USD Account Number: <strong>1315437597</strong> <br/>
+                      Branch Code: <strong>01</strong> Swift Code: <strong>KCBLKENX</strong> <br/><br/>
+                      M-PESA Paybill: <strong>266777</strong> <br/>
+                      Account No: <strong><t t-esc="doc.partner_id.name"/></strong> <br/>
+                      
+                      <br/><br/>
+              </span>
+              </td><td/></tr>
+      </tbody>
+  </table><br/>
+  
+              <div class="oe_structure"/>
+          </div>
+           <table style="width:100%; font-size:18px; font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;" class="table table-sm o_main_table table-borderless mt-4">
+                  <tbody>
+                       <colgroup>
+                              <col width="30%"/>
+                              <col width="70%"/>
+                      </colgroup>
+                      <tr>
+                      <td style="text-align:left">
+                          Approved By:
+                      </td>
+                      <td>
+                          .....................................................................
+                      </td></tr>
+                       <tr>
+                      <td style="text-align:left">
+                          Date:
+                      </td>
+                      <td>
+                          .....................................................................
+                      </td></tr>
+                  </tbody>
+              </table>
+      
+  </t>
+  </div>

@@ -1,0 +1,185 @@
+<div style="font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+    <t t-name="purchase.report_purchaseorder_document">
+        <t t-call="web.external_layout">
+             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+             <table style="width:100%; font-size:18px; font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;" class="table table-sm o_main_table table-borderless mt-4">
+                    <tbody>
+                         <colgroup>
+                                <col width="40%"/>
+                                 <col width="20%"/>
+                                <col width="40%"/>
+                        </colgroup>
+                        <tr>
+                        
+                        <td style="text-align:left">
+                            <strong><t t-esc="res_company.name"/><br/></strong> 
+                            <t t-esc="res_company.street"/><br/>
+                            <t t-esc="res_company.street2"/>, <t t-esc="res_company.city"/><br/>
+                            <t t-esc="res_company.phone"/><br/>  
+                            <t t-esc="res_company.email"/><br/>
+                            <t t-esc="res_company.website"/><br/></td>
+                       
+                       <td/>
+                       
+                       <td><img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo"/></td></tr>
+                    </tbody>
+                </table>
+           
+            <div class="page" style="font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+    
+               
+                
+                <div class="oe_structure"/>
+    
+                <div class="mt-4">
+                    <h2 t-if="o.state in ['draft', 'sent', 'to approve']">Request for Quotation</h2>
+                    <h2 t-if="o.state in ['purchase', 'done']">Purchase Order</h2>
+                    <h2 t-if="o.state == 'cancel'">Cancelled Purchase Order</h2>
+                </div>
+    
+                <table class="table table-sm o_main_table table-borderless mt-4" style="width:100%; font-size:18px;font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+                    <thead style="background-color: #deeaf6;font-weight:bold; display: table-row-group;">
+                        <tr>
+                            <strong><td>SUPPLIER</td>
+                            <td>SHIP TO</td>
+                            <td>DETAILS</td></strong>
+                        </tr>
+                    </thead>
+                    <tbody>
+                         <colgroup>
+                                <col width="33%"/>
+                                 <col width="33%"/>
+                                <col width="34%"/>
+                        </colgroup>
+                        <tr>
+                            <td>
+                               <t t-esc="o.partner_id.name"/><br/>
+                               <t t-esc="o.partner_id.street"/><br/>
+                               <t t-esc="o.partner_id.street2"/><br/>
+                               <t t-esc="o.partner_id.city"/><br/>
+                               <t t-esc="o.partner_id.vat"/><br/>
+                            </td>
+                            <td>
+                                 <t t-esc="res_company.name"/><br/>
+                                <t t-esc="res_company.street"/><br/>
+                                <t t-esc="res_company.street2"/>, <t t-esc="res_company.city"/> <t t-esc="res_company.zip"/><br/>
+                                <t t-esc="res_company.country_id.name"/><br/> 
+                            </td>
+                            <td>
+                                <span t-if="o.state in ['draft', 'sent', 'to approve']"><strong>RFQ:</strong> <span t-field="o.name"/></span><br/>
+                                <span t-if="o.state in ['purchase', 'done']"><strong>P.O NO:</strong> <span t-field="o.name"/></span><br/>
+                                <strong>DATE:</strong> <t t-esc="o.date_approve"/><br/>
+                            </td>
+                           
+                        </tr>
+                    </tbody>
+                </table>
+                  <br/>
+                  <br/>
+                <table class="table table-sm o_main_table table-borderless mt-4" style="width:100%; font-size:18px;font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;">
+                    
+                        <thead style="background-color: #deeaf6;font-weight:bold; display: table-row-group;">
+                        <tr>
+                            <th name="th_name" style="text-align:center"><strong>NAME</strong></th>
+                            <th name="th_description" style="text-align:center"><strong>DESCRIPTION</strong></th>
+                            <th name="th_quantity" class="text-end" style="text-align:center"><strong>QTY</strong></th>
+                            <th name="th_price_unit" class="text-end" style="text-align:center"><strong>RATE</strong></th>
+                            <th name="th_taxes" style="text-align:center"><strong>TAX</strong></th>
+                            <th name="th_subtotal" class="text-end" style="text-align:center">
+                                <strong>AMOUNT</strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="current_subtotal" t-value="0"/>
+                        <t t-foreach="o.order_line" t-as="line">
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
+    
+                            <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type">
+                                   <td id="product">
+                                      <strong><span t-field="line.product_template_id"/></strong> 
+                                    </td>
+                                    <td id="product">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.product_qty"/>
+                                        <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                        <span t-if="line.product_packaging_id">
+                                            (<span t-field="line.product_packaging_qty" t-options="{&quot;widget&quot;: &quot;integer&quot;}"/> <span t-field="line.product_packaging_id"/>)
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.price_unit"/>
+                                    </td>
+                                    <t t-set="taxes" t-value="', '.join([(tax.invoice_label or tax.name) for tax in line.taxes_id])"/>
+                                    <td name="td_taxes" t-attf-class="text-end {{ 'text-nowrap' if len(taxes) &lt; 10 else '' }}">
+                                        <span t-out="taxes">Tax 15%</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_section'">
+                                    <td colspan="99" id="section">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <t t-set="current_section" t-value="line"/>
+                                    <t t-set="current_subtotal" t-value="0"/>
+                                </t>
+                                <t t-if="line.display_type == 'line_note'">
+                                    <td colspan="99" id="note">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
+                            </tr>
+                            <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
+                                <tr class="is-subtotal text-end">
+                                    <td colspan="99" id="subtotal">
+                                        <strong class="mr16">Subtotal</strong>
+                                        <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+    
+                <div id="total" class="row justify-content-end">
+                    <div class="col-4">
+                        <table class="table table-sm table-borderless">
+                            <t t-set="tax_totals" t-value="o.tax_totals"/>
+                            <t t-call="purchase.document_tax_totals"/>
+                        </table>
+                    </div>
+                </div>
+    
+                <p t-field="o.notes" class="mt-4"/>
+                <div class="oe_structure"/>
+            </div>
+             <table style="width:100%; font-size:18px; font-family: 'Fira Code', 'Source Code Pro', Consolas, 'Courier New', monospace;" class="table table-sm o_main_table table-borderless mt-4">
+                    <tbody>
+                         <colgroup>
+                                <col width="30%"/>
+                                <col width="70%"/>
+                        </colgroup>
+                        <tr>
+                        <td style="text-align:left">
+                            Approved By:
+                        </td>
+                        <td>
+                            .....................................................................
+                        </td></tr>
+                         <tr>
+                        <td style="text-align:left">
+                            Date:
+                        </td>
+                        <td>
+                            .....................................................................
+                        </td></tr>
+                    </tbody>
+                </table>
+        </t>
+    </t>
+    </div>
