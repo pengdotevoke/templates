@@ -1,0 +1,209 @@
+<style>
+    /* Force a page break before this element */
+    .page-break {
+        page-break-before: always;
+    }
+
+    /* Page break inline example */
+    .inline-break {
+        display: inline-block;
+        page-break-before: always;
+    }
+</style>
+
+<div class="pos-receipt-header">
+    <div>
+        <div class="pos-receipt" style="font-size:10px; font-style:bold;">
+            <div>
+                Time : <t t-if="props.receipt.date">
+                    <t t-esc="props.receipt.date"/>
+                </t>
+                <t t-if="props.data.partner &amp;&amp; props.data.partner.name">
+                    <div class="cashier">
+                        <div style='font-weight:700;'>Served By: <t t-esc="props.data.partner.name" /></div>
+                    </div>
+                </t>
+                <t t-if="props.data.headerData.table">
+                    <div class="cashier">
+                        <div>Table: <t t-esc="props.data.headerData.table" /></div>
+                    </div>
+                </t>
+                <h6>Walk in Customer</h6>
+                <h5>Kitchen Order</h5>
+            </div>
+            <t t-set="counter2" t-value="1" />
+            <table class='receipt-orderlines' style="font-size:10px; border-style:double; border-left:none; border-right:none; border-bottom:none; width:100%;">
+                <colgroup>
+                    <col width='85%' />
+                    <col width='15%' />
+                </colgroup>
+                <tr style="border-bottom:1px dashed black;">
+                    <th style="text-align:left;font-weight:350;">Item</th>
+                    <th style="text-align:left; font-weight:350;">Qty</th>
+                </tr>
+                <t t-if="props.data.orderlines and props.data.orderlines.length">
+                    <t t-foreach="props.data.orderlines" t-as="category" t-key="category.category_name">
+                        <!-- Iterate Through Lines -->
+                        <t t-foreach="category.lines" t-as="line" t-key="line.id">
+                            <tr>
+                                <td style="padding-top:1%; padding-bottom:1%; text-align:left;font-weight:350;">
+                                    <t t-esc="line.full_product_name" />
+                                </td>
+                                <!-- Quantity -->
+                                <td style="text-align: left;">
+                                    <t t-esc="line.quantity" />
+                                </td>
+                                <t t-set="counter2" t-value="counter2 + 1" />
+                            </tr>
+                        </t>
+                    </t>
+                </t>
+            </table>
+        </div>
+
+        <hr/>
+        <span class="inline-break"></span>
+    </div>
+    
+    <div class="pos-receipt-header" style="font-size:10px; font-style:bold;">
+        <t t-if="env.services.pos.company.name">
+            <div style='font-weight:700;'><t t-esc="env.services.pos.company.name" /></div>
+        </t>
+        <t t-if="env.services.pos.company.street">
+            <div>P.O Box:<t t-esc="env.services.pos.company.street" /></div>
+        </t>
+        <t t-if="env.services.pos.company.phone">
+            <div>TEL:<t t-esc="env.services.pos.company.phone" /></div>
+        </t>
+        <t t-if="env.services.pos.company.vat">
+            <div>KRA PIN:<t t-esc="env.services.pos.company.vat" /></div>
+        </t>
+        <t t-if="env.services.pos.company.email">
+            <div>EMAIL:<t t-esc="env.services.pos.company.email" /></div>
+        </t>
+        <t t-if="env.services.pos.company.website">
+            <div>WEBSITE:<t t-esc="env.services.pos.company.website" /></div>
+        </t>
+        <t t-if="props.data.name">
+            Receipt Number: <t t-esc="props.data.name.replace('Order', '')"/>
+        </t>
+        <t t-if="props.receipt.headerData.header">
+            <t t-out="props.receipt.headerData.header" />
+        </t><br/>
+        Time : <t t-if="props.receipt.date">
+            <t t-esc="props.receipt.date"/>
+        </t>
+        <t t-if="props.data.headerData.table">
+            <div class="cashier">
+                <div>Table: <t t-esc="props.data.headerData.table" /></div>
+            </div>
+        </t>
+        <t t-if="props.data.partner &amp;&amp; props.data.partner.name">
+            <div class="cashier">
+                <div style='font-weight:700;'>Served By: <t t-esc="props.data.partner.name" /></div>
+            </div>
+        </t>
+        <t t-if="props.receipt.headerData.cashier">
+            <div>Attendant: <t t-esc="props.receipt.headerData.cashier" /></div>
+        </t>
+        <div style="font-weight:700; font-size:12px; text-align:center;">
+            Customer Bill
+        </div>
+        <div style="font-size:11px;font-weight:700; text-align:center;">  
+            <t t-if="props.data.orderlines and props.data.orderlines.length"> 
+                <t t-foreach="props.data.orderlines" t-as="category" t-key="category.category_name">
+                    <!-- Iterate Through Lines -->
+                    <t t-foreach="category.lines" t-as="line" t-key="line.id">
+                        <div>
+                            <t t-if="line.note">
+                                Customer PIN: <t t-esc="line.note"/>
+                            </t>
+                        </div> 
+                    </t>
+                </t>
+            </t>
+        </div>
+    </div>
+
+    <br/>
+    <t t-if="props.receipt.headerData.header">
+        <div style='text-align:center; font-size:12px'>
+            <t t-esc="props.receipt.headerData.header" />
+        </div>
+    </t>
+    
+    <t t-set="counter" t-value="1" />
+    
+    <div>
+        <table class='receipt-orderlines' style="font-size:10px; border-style:double; border-left:none; border-right:none; border-bottom:none; width:100%;">
+            <colgroup>
+                <col width='65%' />
+                <col width='5%' />
+                <col width='15%' />
+                <col width='15%' />
+            </colgroup>
+            <tr style="border-bottom:1px dashed black;">
+                <th style="text-align:left;font-weight:350;">Item</th>
+                <th style="text-align:left; font-weight:350;">Qty</th>
+                <th style="text-align:center; font-weight:350;">Cost</th>
+                <th style="text-align:left; font-weight:350;">Total</th>
+            </tr>
+            <t t-if="props.data.orderlines and props.data.orderlines.length">
+                <t t-foreach="props.data.orderlines" t-as="category" t-key="category.category_name">
+                    <!-- Iterate Through Lines -->
+                    <t t-foreach="category.lines" t-as="line" t-key="line.id">
+                        <tr>
+                            <td style="padding-top:1%; padding-bottom:1%; text-align:left;font-weight:350;">
+                                <t t-esc="line.full_product_name" />
+                            </td>
+                            <td style="text-align:left; font-size:12px;">
+                                <t t-esc="line.quantity" />
+                            </td>
+                            <td style="text-align:center; font-size:12px;">
+                                <t t-esc="line.price"/>
+                            </td>
+                            <td style="text-align:left; font-size:12px;">
+                                <t t-esc="line.price*line.quantity" />
+                            </td>
+                            <t t-set="counter" t-value="counter + 1" />
+                        </tr>
+                    </t>
+                </t>
+            </t>
+        </table>
+        
+        <div style="padding-top:6px;">
+            <t t-set='taxincluded' t-value='Math.abs(props.data.amount_total - props.data.total_with_tax) &lt;= 0.000001' />
+            <t t-if='!taxincluded'>
+                <br/>
+                <div style="font-weight:350; font-size:12px; border-top:1px dashed;">
+                    <span style="margin-left:40%;">Subtotal : </span>
+                    <span t-esc='env.utils.formatCurrency(props.data.total_without_tax)' class="pos-receipt-right-align"/>
+                </div>
+                <t t-log='props.data.tax_details'></t>
+                <t t-if="props.data.tax_details and props.data.tax_details.length">
+                    <t t-foreach="props.data.tax_details" t-as="tax" t-key="tax.name">
+                        <div style="font-weight:350; font-size:12px;">
+                            <span style="margin-left:40%;"> <t t-esc="tax.name" /> </span>
+                            <span t-esc="env.utils.formatCurrency(tax.amount)" class="pos-receipt-right-align"/>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </div>
+        
+        <div style="font-weight:350; font-size:12px;">
+            <span style="margin-left:40%;">TOTAL : </span>
+            <span t-esc="env.utils.formatCurrency(props.data.amount_total)" class="pos-receipt-right-align"/>
+        </div>
+        
+        <hr/>
+        <div style="font-weight:700; font-size:12px; text-align:center;">
+            MPESA BUY GOODS NO: 8469334<br/>
+        </div>
+        <div class='before-footer'></div>
+        <div style="font-size:9px; text-align:center;">
+            <p>System provided by SoftIQ Technologies. Tel: 0724206952</p>
+        </div>
+    </div>
+</div>
