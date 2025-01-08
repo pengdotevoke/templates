@@ -1,5 +1,6 @@
+
 <div style="font-family:roboto">
-    <table align="centre" style="width:100%; font-size:18px;" class="table">
+    <table align="centre" style="width:100%; font-size:14px;" class="table">
         <tbody>
              <colgroup>
                     <col width = "40%"/>
@@ -14,28 +15,55 @@
            PIN:  <t t-esc="res_company.vat"/><br/></td></tr>
         </tbody>
     </table>
-    <br/>
-    <br/>
-        <center><h1 style ="color:#313c8d">INVOICE</h1></center>
+    
         
-       <strong><p style="text-align:right">Invoice No. <br/> <t t-esc="invoice.name"/></p></strong>
-       <br/>
-       <span>
-           <strong>SOLD TO</strong><br/>
-           <t t-esc="invoice.partner_id.name"/><br/>
-           <t t-esc="invoice.partner_id.city"/><br/>
-           <t t-esc="invoice.partner_id.vat"/><br/>
-       </span>
-       <br/>
-       <br/>
-       <table align="centre" style="width:100%; font-size:18px; border: 1px solid black; border-color: #deeaf6;" class="table">
-           <thead style="background-color: #deeaf6;font-weight:bold;">
+    
+            <center>
+            <p style ="color:#313c8d; font-size:30px;" class="mt-4">
+                <span t-if="invoice.move_type in ['out_refund', 'in_refund']">CREDIT NOTE</span>  <!-- Check if it's a credit note -->
+                <span t-else="">INVOICE</span>
+            </p>
+            </center>
+        <table align="centre" style="width:100%; font-size:14px;" class="table">
+        <tbody>
+             <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']">  
+                 <colgroup>
+                        <col width = "50%"/>
+                        <col width = "50%"/>
+                </colgroup>
+            </t>
+             <t t-else=""> 
+             <colgroup>
+                    <col width = "40%"/>
+                     <col width = "20%"/>
+                    <col width = "40%"/>
+            </colgroup>
+            </t> 
+            </td>
+            <tr><td> <strong>SOLD TO</strong><br/>
+                   <t t-if="invoice.partner_id.name"><t t-esc="invoice.partner_id.name" /><br/></t> 
+                   <t t-if="invoice.partner_id.city"><t t-esc="invoice.partner_id.city" /><br/></t> 
+                   <t t-if="invoice.partner_id.vat"><t t-esc="invoice.partner_id.vat" /></t> </td>
+            <td></td>
+            <td style="text-align:right">  <strong> 
+        <span t-if="invoice.move_type in ['out_refund', 'in_refund']">RINV/</span>  <!-- Check if it's a credit note -->
+        <span t-else="">INV/</span> </strong><t t-esc="invoice.name"/>
+            <br/> </td></tr>
+        </tbody>
+    </table>
+    <br/>
+       <table align="centre" style="width:100%; font-size:14px; border: 1px solid black; border-color: #deeaf6;" class="table">
+           <thead style="background-color: #deeaf6;font-weight:bolder;">
                <tr>
-                   <t t-if="invoice.invoice_payment_term_id"><td>Invoice Date</td> 
-                   <td>Payment Terms</td>
-                   <td>Due Date</td> </t>
-                   <t t-else=""><td>Invoice Date</td> 
-                   <td>Due Date</td> </t>
+                   <t t-if="invoice.invoice_payment_term_id">
+                       <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> Credit Note Date</t><t t-else="">Invoice Date</t> </td> 
+                       <t t-if="invoice.move_type in ['out_refund', 'in_refund']"></t> <t t-else=""><td>Payment Terms</td> </t>
+                       <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> Reference</t><t t-else="">Due Date</t></td>
+                     </t>
+                   <t t-else="">
+                    <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> Credit Note Date</t><t t-else="">Invoice Date</t></td> 
+                    <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> Reference</t><t t-else="">Due Date</t></td>
+                   </t>
                </tr>
            </thead>
            <tbody >
@@ -48,27 +76,32 @@
                         <p><strong>LPO Number:</strong> <span t-esc="invoice.lpo_number"/></p>
                     </t>
                <colgroup>
-                    
-                   <t t-if="invoice.invoice_payment_term_id"><col width = "30%"/> <col width = "40%"/> <col width = "30%"/></t>
-                   <t t-else=""><col width = "50%"/> <col width = "50%"/></t> 
+                   <t t-if="invoice.invoice_payment_term_id">
+                       <col width = "30%"/> 
+                       <col width = "40%"/> 
+                       <col width = "30%"/>
+                    </t>
+                   <t t-else="">
+                       <col width = "50%"/> 
+                       <col width = "50%"/>
+                    </t> 
                 </colgroup>
                <tr>
                    <t t-if="invoice.invoice_payment_term_id">
-                    <td><t t-esc="invoice.invoice_date"/></td>
-                   <td><t t-esc="invoice.invoice_payment_term_id.name"/></td>
-                   <td><t t-esc="invoice.invoice_date_due"/></td>
+                        <td><t t-esc="invoice.invoice_date"/></td>
+                        <t t-if="invoice.move_type in ['out_refund', 'in_refund']"></t><t t-else=""><td><t t-esc="invoice.invoice_payment_term_id.name"/></td></t>
+                        <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> <t t-esc="invoice.ref"/></t><t t-else=""><t t-esc="invoice.invoice_date_due"/></t></td>
                    </t>
-                   
                    <t t-else="">
                        <td><t t-esc="invoice.invoice_date"/></td>
-                       <td><t t-esc="invoice.invoice_date_due"/></td>
-                       </t>
+                       <td><t t-if="invoice.move_type in ['out_refund', 'in_refund']"> <t t-esc="invoice.ref"/></t><t t-else=""><t t-esc="invoice.invoice_date_due"/></t></td>
+                   </t>
                </tr>
            </tbody>
        </table>
         <br/>
-        <table align="centre" style="width:100%; font-size:18px; border: 1px solid black; border-color: #deeaf6;" class="table">
-            <thead style="background-color: #deeaf6;font-weight:bold;">
+        <table align="centre" style="width:100%; font-size:14px; border: 1px solid black; border-color: #deeaf6;" class="table">
+            <thead style="background-color: #deeaf6; font-weight:bolder;">
                 <tr>
                     <th>#</th>
                     <th>Product Desc</th>
@@ -97,16 +130,16 @@
                             <t t-esc="line.product_id.name"/>
                         </td>
                         <td>
-                            <t t-esc="line.quantity"/>
+                           <t t-esc="'{:,}'.format(line.quantity)"/>
                         </td>
                         <td>
-                           Ksh. <t t-esc="line.price_unit"/>
+                           <t t-esc="'{:,}'.format(line.price_unit)"/>
                         </td>
                         <td>
                             <t t-esc="line.tax_ids.name"/>
                         </td>
                         <td>
-                            Ksh. <t t-esc="line.price_subtotal"/>
+                            <t t-esc="'{:,}'.format(line.price_subtotal)"/>
                         </td>.
                         <t t-set="counter" t-value="counter+1"/>
                     </tr>
@@ -115,23 +148,26 @@
         </table>
         <br/>
         
-        <table align="centre" style="width:100%; font-size:18px;" class="table">
-        <tbody>
+        <t t-if="invoice.move_type in ['out_refund', 'in_refund']">
+             Prepared By: <t t-esc="invoice.invoice_user_id.name"/>
+        </t>
+        <t t-else="">
+            <table align="centre" style="width:100%; font-size:14px;" class="table">
+           <tbody>
              <colgroup>
                     <col width = "50%"/>
                     <col width = "50%"/>
             </colgroup>
             <tr><td></td>
             <td style="text-align:right"> <span style="float:right;">
-                Total Taxable Amount: Ksh. <t t-esc="invoice.amount_untaxed"/>
+                Total Taxable Amount: Ksh.  <t t-esc="'{:,}'.format(invoice.amount_untaxed)"/>
             <br/><br/>
-            VAT(16%): Ksh. <t t-esc="invoice.amount_tax"/>
-            <br/>
-            <br/>
+            VAT(16%): Ksh. <t t-esc="'{:,}'.format(invoice.amount_tax)"/>
+            <br/><br/>
         
-           <span style="font-weight:bold;"> TOTAL AMOUNT: Ksh. <t t-esc="invoice.amount_total"/></span>
+           <span style="font-weight:bold;"> TOTAL AMOUNT: Ksh. <t t-esc="'{:,}'.format(invoice.amount_total)"/></span>
             <br/><br/>
-              <span style= "color:#313c8d; font-weight:bold">  Balance Due: Ksh. <t t-esc="invoice.amount_residual"/></span>
+              <span style= "color:#313c8d; font-weight:bold">  Balance Due: Ksh. <t t-esc="'{:,}'.format(invoice.amount_residual)"/></span>
             <br/>
             </span>
             <br/> </td></tr>
@@ -140,17 +176,15 @@
                 KES Account Number: <t t-esc="invoice.partner_bank_id.acc_number"/> <br/>
                 Branch Code:<t t-esc="invoice.partner_bank_id.bank_id.bic"/> <br/><br/>
                 M-PESA Paybill: <strong>601690</strong> <br/> Account No: <strong><t t-esc="invoice.name"/></strong> <br/>
-                <span>QR Code Placeholder</span><br/>
                 <t t-if="invoice.qr_code">
                      <img t-att-src="'data:image/png;base64,%s' % invoice.qr_code.decode('utf-8')" style="width:150px; height:150px;"/>
                 </t>
-                
                 <br/><br/>
-                Received By:......................................
+                Prepared By: <t t-esc="invoice.invoice_user_id.name"/>
         </span>
         </td><td></td></tr>
         </tbody>
-    </table>
+    </table></t>
+        
       
     </div>
-              
