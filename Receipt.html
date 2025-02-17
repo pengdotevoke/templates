@@ -207,3 +207,179 @@
         </div>
     </div>
 </div>
+<!--Non Restaurant Receipt-->
+
+            <div class="pos-receipt">
+           <t t-if="env.services.pos.config.logo">
+    <img t-att-src="'data:image/png;base64,' + env.services.pos.config.logo"
+         alt="Logo"
+         class="pos-receipt-logo"
+         style="width: 150px; height: auto;"/>
+    <br />
+</t>
+
+            <div style="font-size:20px; font-weight:bolder; text-align:center;font-family: 'Times New Roman', Times, serif;">
+                <t t-esc="env.services.pos.company.name"/>
+            </div>
+            <div style="font-size:13px; font-family: 'Times New Roman', Times, serif; text-align:center;">
+                Shop 3, Park Avenue Plaza, 1st Parklands
+            </div>
+             <div style="font-size:13px; font-family: 'Times New Roman', Times, serif; text-align:center;">
+                Dealers in:Beer, Wines and Spirits
+            </div>
+           <div style="font-size:13px; font-weight:bolder; font-family: 'Times New Roman', Times, serif; text-align:center;">
+                Tel: <t t-esc="env.services.pos.company.phone || ''"/><br />
+            </div>
+            <div style="font-size:13px; text-align:center; font-family: 'Times New Roman', Times, serif;">
+               Email: <t t-esc="env.services.pos.company.email"/><br />
+            </div>
+            <div style="font-size:13px; font-weight:bolder; font-family: 'Times New Roman', Times, serif; text-align:center;">
+                <u>CASH SALE RECEIPT</u><br />
+            </div>
+            <div style="font-size:13px; text-align:left; font-family: 'Times New Roman', Times, serif;">
+                
+                              <t t-if="props.data.name">
+                                 Receipt No: <t t-esc="props.data.name.replace('Order', '')"/>
+                              </t>
+                             <t t-if="props.order[0].partner">
+                                Customer: <t t-esc='props.order[0].partner.name' style="font-style:bold" />
+                             </t>
+               <table style="font-family: 'Times New Roman', Times, serif;">
+                <colgroup>
+                    <col width='40%' />
+                    <col width='15%' />
+                    <col width='45%' />
+                </colgroup>
+                   <tbody>
+                       <tr>
+                           <td>
+                              <t t-if="props.order[0].partner">
+                                Customer :  <t t-esc='props.order[0].partner.name' style="font-style:bold" />
+                              </t> 
+                               <t t-else="">
+                                Customer :  CLIENT
+                              </t> 
+                           </td>
+                           <td></td>
+                           <td></td>
+                       </tr>
+                        <tr>
+                           <td>
+                               <t t-if="props.receipt.date">
+                                  DATE: <t t-esc="props.receipt.date.split(' ')[0]" />
+                                </t>
+                                <t t-else="">
+                                  DATE: <t t-esc="props.order.validation_date.split(' ')[0]"/>
+                                </t>
+                           </td>
+                           <td></td>
+                           <td>
+                               <t t-if="props.receipt.date">
+                                  TIME: <t t-esc="props.receipt.date.split(' ')[1]" />
+                                </t>
+                                <t t-else="">
+                                  TIME: <t t-esc="props.order.validation_date.split(' ')[1]"/>
+                                </t>
+                           </td>
+                       </tr>
+                   </tbody>
+               </table>
+            </div>
+            <br/>
+            <div style="font-family: 'Times New Roman', Times, serif;">
+                <table class='receipt-orderlines' style="font-size:15px; border-style:double;
+            border-left:none; border-right:none; border-bottom:none; width:100%;">
+                <colgroup>
+                    <col width='50%' />
+                    <col width='15%' />
+                    <col width='15%' />
+                    <col width='20%' />
+                </colgroup>
+                <tr style="border-bottom:3px dashed black;">
+                    <th style="text-align:left;">Item Desc</th>
+                    <th style="text-align:center;">Qty</th>
+                    <th style="text-align:center;">Price</th>
+                    <th style="text-align:right;">Amount</th>
+                </tr>
+                <tbody style="font-size:13px;">
+                        <t t-if="props.receipt.orderlines and props.receipt.orderlines.length">
+                            <tr t-foreach="props.receipt.orderlines" t-as="orderline" t-key="index_orderlines">
+                               <td style="padding-top:1%; padding-bottom:1%; text-align:left;">
+                                    <t t-esc="orderline.productName"/>
+                                </td>
+                                <td style="text-align:center; font-size:14px;">
+                                    <t t-esc="orderline.qty.split('.')[0]"/>
+                                </td>
+                                <td style="text-align:center; font-size:14px;">
+                                    <t t-esc="orderline.unitPrice"/>
+                                </td>
+                                <td style="text-align:right; font-size:14px;">
+                                    <t t-esc="orderline.price"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+            <div style="padding-top:6px;">
+                <!--<t t-set='taxincluded' t-value='Math.abs(props.receipt.amount_total - props.receipt.total_with_tax) &lt;= 0.000001' />
+                <t t-if='!taxincluded'>
+                    <div style="font-weight:700; font-size:14px; border-top:1px dashed;">
+                        <span style="margin-left:40%;">Subtotal : </span>
+                        <span t-esc='env.utils.formatCurrency(props.data.total_without_tax)' class="pos-receipt-right-align"/>
+                    </div>
+                    <t t-foreach='props.data.tax_details' t-as='tax' t-key="index_tax_details">
+                        <div style="font-weight:700; font-size:14px;">
+                            <span style="margin-left:40%;"><t t-esc='tax.name' /></span>
+                            <span t-esc='env.utils.formatCurrency(tax.amount)' class="pos-receipt-right-align"/>
+                        </div>
+                    </t>
+                </t>-->
+                <div style="font-weight:700; font-size:14px;">
+                    <span style="margin-left:40%;">TOTAL : </span>
+                    <span t-esc='env.utils.formatCurrency(props.data.amount_total)' class="pos-receipt-right-align"/>
+                </div>
+            </div>
+            <!-- Payment Lines -->
+            <t t-foreach='props.paymentlines' t-as='line' t-key="index_paymentlines">
+                <div style="font-size:14px; border-top:1px dashed; padding-top:5px;">
+                    <span style="margin-left:40%;"><t t-esc='line.name' /></span>
+                    <span t-esc='env.utils.formatCurrency(line.get_amount())' class="pos-receipt-right-align"/>
+                </div>
+            </t>
+            <div class="receipt-change" style="font-size:14px;">
+            <span style="margin-left:40%;">CHANGE : </span>
+                <span t-esc='env.utils.formatCurrency(props.receipt.change)' class="pos-receipt-right-align"/>
+            </div>
+            <t t-if='props.receipt.total_discount'>
+                <div style="font-size:14px; border-top:1px dashed; padding-top:5px;">
+                    <span style="margin-left:40%;">Discounts : </span>
+                    <span t-esc='env.utils.formatCurrency(props.receipt.total_discount)' class="pos-receipt-right-align"/>
+                </div>
+            </t>
+            <t t-if='taxincluded'>
+                <t t-foreach='props.receipt.tax_details' t-as='tax' t-key="index_receipt_tax_details">
+                    <div style="font-size:14px;">
+                        <span style="margin-left:40%;"><t t-esc='tax.name' /></span>
+                        <span t-esc='env.utils.formatCurrency(tax.amount)' class="pos-receipt-right-align"/>
+                    </div>
+                </t>
+                <div style="font-size:14px;">
+                    <span style="margin-left:40%;">Total Taxes : </span>
+                    <span t-esc='env.utils.formatCurrency(rops.receipt.total_tax)' class="pos-receipt-right-align"/>
+                </div>
+            </t>
+            <br/>
+            <div style="font-size:14px; text-align:left;">
+               <strong>Ref Number:</strong> <t t-esc='props.receipt.ticket_code' /><br />
+            </div>
+            <div style="font-size:14px; text-align:left;">
+                <strong>Served By: </strong><t t-esc='props.receipt.headerData.cashier' /><br />
+            </div>
+        <div style="font-size:13px; text-align:center;">
+            <p>Thank You. Please Come Again</p>
+        </div>
+            <div style="font-size:9px; text-align:center;">
+            <p>System provided by SoftIQ Technologies. Tel: 0724206952</p>
+        </div>
+        </div>
